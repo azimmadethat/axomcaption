@@ -260,35 +260,127 @@ select.csel{flex:1;background:var(--bg3);border:1px solid var(--border);color:va
   display:none;
   position:fixed;bottom:0;left:0;right:0;z-index:999;
   background:var(--bg2);border-top:1px solid var(--border);
-  padding:6px 8px calc(6px + env(safe-area-inset-bottom));
-  gap:4px;
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  gap:6px;
 }
 .mtab{
-  flex:1;padding:8px 4px;border-radius:8px;border:1px solid transparent;
-  background:transparent;color:var(--txt-mute);font-size:11px;font-weight:600;
+  flex:1;padding:10px 4px;border-radius:10px;border:1.5px solid transparent;
+  background:var(--bg3);color:var(--txt-mute);font-size:12px;font-weight:700;
   cursor:pointer;transition:all .15s;font-family:var(--font-ui);
+  display:flex;flex-direction:column;align-items:center;gap:2px;
 }
-.mtab.on{background:rgba(124,58,237,.15);border-color:var(--p);color:#fff}
+.mtab.on{background:rgba(124,58,237,.2);border-color:var(--p);color:#fff}
+.mtab-icon{font-size:16px;line-height:1}
+.mtab-lbl{font-size:10px}
+
+/* ── RESPONSIVE LAYOUT ───────────────────────────────────────── */
 @media(max-width:900px){
+  html,body{overflow:auto;height:auto}
+  body{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+  #workspace{
+    display:flex;flex-direction:column;
+    height:auto;overflow:visible;
+  }
   #mobtabs{display:flex}
-  body{padding-bottom:60px}
-  /* Panel switching on mobile */
-  #workspace > #left,
-  #workspace > #center,
-  #workspace > #right {transition:opacity .2s}
-  #workspace.mob-left   > #center,
-  #workspace.mob-left   > #right  {display:none}
-  #workspace.mob-center > #left,
-  #workspace.mob-center > #right  {display:none}
-  #workspace.mob-right  > #left,
-  #workspace.mob-right  > #center {display:none}
-  /* Default show video on mobile */
-  #workspace:not(.mob-left):not(.mob-right) > #left,
-  #workspace:not(.mob-left):not(.mob-right) > #right {display:none}
+
+  /* Video panel always full width */
+  #center{
+    order:1;width:100%;
+    min-height:56vw;
+    flex-shrink:0;
+  }
+  #vwrap{min-height:56vw}
+
+  /* Left/right panels hidden by default, shown by tab */
+  #left{
+    order:2;width:100%;
+    border-right:none;border-top:1px solid var(--border);
+    overflow-y:auto;max-height:70vh;
+    display:none;
+  }
+  #right{
+    order:3;width:100%;
+    border-left:none;border-top:1px solid var(--border);
+    max-height:70vh;
+    display:none;
+  }
+
+  /* Tab switching */
+  #workspace.mob-left  #left   {display:block}
+  #workspace.mob-right #right  {display:flex}
+  /* Center always visible */
+  #center{display:flex !important}
+
+  /* Topbar compact */
+  #topbar{padding:0 10px;height:46px;min-height:46px}
+  .logo span:not(.logo-icon){font-size:13px}
+  .tbtn{padding:5px 9px;font-size:10px}
+  #vctrl{height:38px;padding:0 10px;gap:6px}
+  #tline{height:40px}
+
+  /* Generate button bigger on mobile */
+  #genbtn{padding:14px;font-size:14px}
+
+  /* Subtitle list items bigger touch targets */
+  .sitem{padding:10px 12px}
+  .sitxt{font-size:15px}
+
+  /* Style panel — larger touch controls */
+  .sec{padding:12px 14px}
+  .pb{height:38px;font-size:16px}
+  .tog{width:36px;height:20px}
+  .tog::after{width:14px;height:14px}
+  .tog.on::after{left:18px}
+  input[type=range]::-webkit-slider-thumb{width:18px;height:18px}
+  .anb{padding:10px 6px;font-size:11px}
+  .fontbtn{padding:9px 6px;font-size:12px}
+  .reelsbtn{padding:10px 12px;font-size:11px}
 }
+
+@media(max-width:480px){
+  #center{min-height:52vw}
+  #vwrap{min-height:52vw}
+  .tbtn{padding:4px 7px;font-size:9px}
+  #topbar{padding:0 8px}
+}
+
+@media(min-width:901px) and (max-width:1200px){
+  #workspace{grid-template-columns:220px 1fr 250px}
+}
+
+/* ── LEFT PANEL HEADER ──────────────────────────────────────── */
 #left-header{padding:12px 13px 10px;border-bottom:1px solid var(--border2);background:linear-gradient(180deg,rgba(124,58,237,.07) 0%,transparent 100%)}
 #left-header .lh-title{font-size:12px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:6px}
 #left-header .lh-sub{font-size:9px;color:var(--txt-mute);font-family:var(--font-mono);margin-top:2px}
+
+/* ── FFMPEG EXPORT MODAL ────────────────────────────────────── */
+#exportModal{
+  display:none;position:fixed;inset:0;z-index:9998;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:20px;
+}
+#exportModal.show{display:flex}
+#exportBox{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+  padding:24px;max-width:380px;width:100%;
+  display:flex;flex-direction:column;gap:14px;
+}
+.exp-title{font-size:15px;font-weight:700;color:var(--txt)}
+.exp-sub{font-size:11px;color:var(--txt-dim);font-family:var(--font-mono);line-height:1.7}
+#expPrgBar{height:6px;background:var(--bg5);border-radius:6px;overflow:hidden}
+#expPrgFill{height:100%;background:linear-gradient(90deg,var(--p),var(--p-lt));width:0%;transition:width .3s}
+#expPrgLbl{font-size:10px;color:var(--txt-mute);font-family:var(--font-mono)}
+.exp-actions{display:flex;gap:8px;margin-top:4px}
+.exp-btn{
+  flex:1;padding:11px;border-radius:8px;border:none;cursor:pointer;
+  font-size:12px;font-weight:700;font-family:var(--font-ui);transition:all .15s;
+}
+.exp-btn-primary{background:var(--p);color:#fff;box-shadow:0 3px 14px var(--p-glow)}
+.exp-btn-primary:hover{background:var(--p-lt)}
+.exp-btn-primary:disabled{background:var(--bg4);color:var(--txt-mute);cursor:not-allowed;box-shadow:none}
+.exp-btn-sec{background:var(--bg3);color:var(--txt-dim);border:1px solid var(--border2)}
+.exp-btn-sec:hover{border-color:var(--p);color:var(--txt)}
+
 
 /* ── TYPOGRAPHY CONTRAST FIXES ──────────────────────────────── */
 /* Section labels brighter */
@@ -395,7 +487,8 @@ select.csel{flex:1;background:var(--bg3);border:1px solid var(--border);color:va
     <button class="tbtn" id="rmVidBtn" onclick="removeVideo()" style="display:none;border-color:rgba(192,57,43,.4);color:#C0392B">✕ Remove Video</button>
     <button class="tbtn" onclick="exportSRT()">⬇ SRT</button>
     <button class="tbtn" onclick="exportVTT()">⬇ VTT</button>
-    <button class="tbtn tp" id="dlVidBtn" onclick="downloadVideo()" style="display:none">⬇ Export Video</button>
+    <button class="tbtn" id="dlOrigBtn" onclick="downloadOriginal()" style="display:none">⬇ Video</button>
+    <button class="tbtn tp" id="dlVidBtn" onclick="downloadVideo()" style="display:none">⬇ Export</button>
   </div>
 </div>
 
@@ -555,11 +648,31 @@ select.csel{flex:1;background:var(--bg3);border:1px solid var(--border);color:va
 </div>
 <div id="toast"></div>
 
-<!-- Mobile tab bar — only visible on small screens -->
+<!-- Export modal -->
+<div id="exportModal">
+  <div id="exportBox">
+    <div class="exp-title" id="expTitle">⬇ Export Video</div>
+    <div class="exp-sub" id="expSub">Burning captions onto your video…</div>
+    <div id="expPrgBar"><div id="expPrgFill"></div></div>
+    <div id="expPrgLbl">Loading ffmpeg…</div>
+    <div class="exp-actions">
+      <button class="exp-btn exp-btn-primary" id="expDlBtn" disabled onclick="expDownload()">⬇ Download</button>
+      <button class="exp-btn exp-btn-sec" onclick="expClose()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile tab bar -->
 <div id="mobtabs">
-  <button class="mtab on" data-panel="left" onclick="mobSwitch(this,'left')">🎨 Style</button>
-  <button class="mtab" data-panel="center" onclick="mobSwitch(this,'center')">▶ Video</button>
-  <button class="mtab" data-panel="right" onclick="mobSwitch(this,'right')">📝 Subs</button>
+  <button class="mtab" data-panel="left" onclick="mobSwitch(this,'left')">
+    <span class="mtab-icon">🎨</span><span class="mtab-lbl">Style</span>
+  </button>
+  <button class="mtab on" data-panel="center" onclick="mobSwitch(this,'center')">
+    <span class="mtab-icon">▶</span><span class="mtab-lbl">Video</span>
+  </button>
+  <button class="mtab" data-panel="right" onclick="mobSwitch(this,'right')">
+    <span class="mtab-icon">📝</span><span class="mtab-lbl">Subs</span>
+  </button>
 </div>
 
 <script>
@@ -1698,10 +1811,10 @@ function mobSwitch(btn, panel) {
   document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
   const ws = document.getElementById('workspace');
-  ws.className = ''; // reset
-  if (panel === 'left')   ws.classList.add('mob-left');
-  if (panel === 'center') ws.classList.add('mob-center');
-  if (panel === 'right')  ws.classList.add('mob-right');
+  ws.className = '';
+  if (panel === 'left')  ws.classList.add('mob-left');
+  if (panel === 'right') ws.classList.add('mob-right');
+  // center = no class needed, #center always visible
 }
 
 // ── EXPORT ──────────────────────────────────────
@@ -1794,113 +1907,281 @@ function drawCaptionOnCtx(ctx, t, cW, cH, textY, finalFS) {
   ctx.restore();
 }
 
-// ── DOWNLOAD VIDEO WITH CAPTIONS (single real-time pass, audio+video) ──
-async function downloadVideo() {
-  if (!vidReady || !subs.length) { toast('Load a video and generate subtitles first!'); return; }
+// ── EXPORT VIDEO WITH BURNED-IN CAPTIONS ──────────────────────
+// Strategy:
+//   1. Use WebCodecs VideoEncoder + mp4-muxer (Chrome/Edge/Android Chrome — fast, native MP4)
+//   2. Fallback: MediaRecorder canvas capture → WebM (Firefox/older browsers)
+//   3. Final fallback: download original video file + SRT (iOS Safari, old devices)
+// Captions are drawn via drawCaptionOnCtx — pixel-perfect match to preview.
 
-  const btn = document.getElementById('dlVidBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Starting…';
-  toast('🎬 Exporting at original resolution…');
+let _expBlob = null;
+let _expExt  = 'mp4';
 
-  // ── Native video resolution — no upscaling, no 1080p forcing ─────────
-  const OUT_W = vid.videoWidth  || 1280;
-  const OUT_H = vid.videoHeight || 720;
+// Progress helpers
+function expSetProgress(pct, label) {
+  document.getElementById('expPrgFill').style.width = pct + '%';
+  document.getElementById('expPrgLbl').textContent = label;
+}
+function expClose() {
+  document.getElementById('exportModal').classList.remove('show');
+  _expBlob = null;
+}
+function expDownload() {
+  if (!_expBlob) return;
+  const url = URL.createObjectURL(_expBlob);
+  const a   = document.createElement('a');
+  a.href    = url;
+  const origName = (_currentVideoFile?.name || 'video').replace(/\.[^.]+$/, '');
+  a.download = origName + '_captioned.' + _expExt;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 20000);
+  document.getElementById('exportModal').classList.remove('show');
+  toast('✅ Download started!');
+}
 
-  // ── Scale font: preview player shows video letterboxed inside #vwrap.
-  //    getVideoRect() gives the actual rendered video rectangle in pixels.
-  //    For the export canvas the video fills the full OUT_W × OUT_H exactly,
-  //    so we scale font by the ratio of native width → preview video width.
+// Build canvas with captions at a given time — exact match to preview
+function getExportCanvas(videoW, videoH) {
+  const canvas = document.createElement('canvas');
+  canvas.width  = videoW;
+  canvas.height = videoH;
+  return canvas;
+}
+
+function getExportTextY(OUT_W, OUT_H, finalFS) {
+  if (reelsMode === 'instagram') return OUT_H - Math.round(OUT_H * 0.22);
+  if (reelsMode === 'youtube')   return OUT_H - Math.round(OUT_H * 0.12);
+  const pad = Math.round(OUT_H * 0.04);
+  const y = nudgePct.y / 100 * OUT_H;
+  return Math.max(finalFS + pad, Math.min(OUT_H - pad, y));
+}
+
+// ── METHOD 1: WebCodecs + mp4-muxer ───────────────────────────
+// Produces real MP4, works on Android Chrome 94+, Chrome desktop
+async function exportWithWebCodecs(videoFile, OUT_W, OUT_H, fps) {
+  // Dynamically load mp4-muxer
+  await new Promise((res, rej) => {
+    if (window.Mp4Muxer) { res(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/mp4-muxer@4.4.4/build/mp4-muxer.min.js';
+    s.onload = res; s.onerror = () => rej(new Error('mp4-muxer load failed'));
+    document.head.appendChild(s);
+  });
+
+  expSetProgress(10, 'Preparing encoder…');
+
+  const { Muxer, ArrayBufferTarget } = window.Mp4Muxer;
+  const target = new ArrayBufferTarget();
+  const muxer  = new Muxer({
+    target,
+    video: { codec: 'avc', width: OUT_W, height: OUT_H },
+    firstTimestampBehavior: 'offset'
+  });
+
+  const encoder = new VideoEncoder({
+    output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
+    error:  (e) => { throw e; }
+  });
+
+  encoder.configure({
+    codec:            'avc1.42001f',
+    width:            OUT_W,
+    height:           OUT_H,
+    bitrate:          6_000_000,
+    framerate:        fps,
+    latencyMode:      'quality',
+    avc:              { format: 'avc' }
+  });
+
   const r = getVideoRect();
   const previewVidW = r.w > 0 ? r.w : OUT_W;
   const scaleFactor = OUT_W / previewVidW;
-  const finalFS = Math.round(S.fontSize * scaleFactor);
+  const finalFS     = Math.round(S.fontSize * scaleFactor);
+  const textY       = getExportTextY(OUT_W, OUT_H, finalFS);
 
-  // ── Caption Y: mirrors positionSub() / drawExportFrame exactly ────────
-  function getExportTextY() {
-    if (reelsMode === 'instagram') return OUT_H - Math.round(OUT_H * 0.22);
-    if (reelsMode === 'youtube')   return OUT_H - Math.round(OUT_H * 0.12);
-    // Manual 3×3 grid — same padding ratio as preview
-    const pad = Math.round(OUT_H * 0.04);
-    const posY = {
-      tl: finalFS + pad, tc: finalFS + pad, tr: finalFS + pad,
-      ml: OUT_H / 2,     mc: OUT_H / 2,     mr: OUT_H / 2,
-      bl: OUT_H - pad,   bc: OUT_H - pad,   br: OUT_H - pad,
-    };
-    return posY[S.pos] ?? (OUT_H - pad);
-  }
+  const canvas  = getExportCanvas(OUT_W, OUT_H);
+  const ctx     = canvas.getContext('2d', { alpha: false });
+  const totalFrames = Math.ceil(vid.duration * fps);
+  let   frameIdx    = 0;
 
-  // ── Canvas ─────────────────────────────────────────────────────────────
-  const canvas = document.createElement('canvas');
-  canvas.width  = OUT_W;
-  canvas.height = OUT_H;
-  const ctx = canvas.getContext('2d', {alpha: false});
-
-  // ── Capture audio from the video element ──────────────────────────────
-  const canvasStream = canvas.captureStream(0); // manual frame timing
-  let hasAudio = false;
-  try {
-    const vs = vid.captureStream ? vid.captureStream() : vid.mozCaptureStream();
-    vs.getAudioTracks().forEach(t => { canvasStream.addTrack(t); hasAudio = true; });
-  } catch(e) { console.warn('No audio track:', e.message); }
-
-  // ── MediaRecorder ─────────────────────────────────────────────────────
-  const mimeType =
-    MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' :
-    MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus') ? 'video/webm;codecs=vp8,opus' :
-    MediaRecorder.isTypeSupported('video/webm;codecs=vp9')      ? 'video/webm;codecs=vp9'      :
-    'video/webm';
-
-  const recorder = new MediaRecorder(canvasStream, {mimeType, videoBitsPerSecond: 8_000_000});
-  const chunks = [];
-  recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-
-  recorder.onstop = () => {
-    const blob = new Blob(chunks, {type: 'video/webm'});
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href = url;
-    a.download = 'axomcaption_' + OUT_W + 'x' + OUT_H + '.webm';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
-    btn.textContent = '⬇ Export Video';
-    btn.disabled = false;
-    vid.muted = false;
-    toast('✅ Exported ' + OUT_W + '×' + OUT_H + (hasAudio ? ' 🔊' : ' (no audio)'));
-  };
-
-  // ── Per-frame draw: video frame + captions exactly as customised ───────
-  function drawExportFrame(t) {
-    ctx.drawImage(vid, 0, 0, OUT_W, OUT_H);
-    drawCaptionOnCtx(ctx, t, OUT_W, OUT_H, getExportTextY(), finalFS);
-  }
-
-  // ── RAF loop ──────────────────────────────────────────────────────────
-  let rafId = null;
-  function loop() {
-    if (vid.ended || vid.paused) return;
-    drawExportFrame(vid.currentTime);
-    btn.textContent = `⏳ ${Math.round(vid.currentTime / vid.duration * 100)}%`;
-    rafId = requestAnimationFrame(loop);
-  }
-
-  // ── Seek to 0, then play + record ─────────────────────────────────────
-  vid.muted = true;
+  // Seek + draw frame by frame
+  vid.pause();
   vid.currentTime = 0;
-  await new Promise(r => { vid.onseeked = r; setTimeout(r, 400); });
+  await new Promise(r => { vid.onseeked = r; setTimeout(r, 500); });
 
-  recorder.start(100);
-  vid.play();
-  rafId = requestAnimationFrame(loop);
+  while (frameIdx < totalFrames) {
+    const t = frameIdx / fps;
+    vid.currentTime = t;
+    await new Promise(r => { vid.onseeked = r; setTimeout(r, 80); });
 
-  vid.onended = () => {
-    cancelAnimationFrame(rafId);
-    drawExportFrame(vid.duration);
-    setTimeout(() => {
-      recorder.stop();
+    ctx.drawImage(vid, 0, 0, OUT_W, OUT_H);
+    drawCaptionOnCtx(ctx, t, OUT_W, OUT_H, textY, finalFS);
+
+    const bitmap = await createImageBitmap(canvas);
+    const frame  = new VideoFrame(bitmap, { timestamp: Math.round(t * 1_000_000), duration: Math.round(1_000_000 / fps) });
+    const isKey  = frameIdx % (fps * 2) === 0;
+    encoder.encode(frame, { keyFrame: isKey });
+    frame.close(); bitmap.close();
+
+    frameIdx++;
+    const pct = Math.round(10 + (frameIdx / totalFrames) * 82);
+    expSetProgress(pct, `Encoding… ${Math.round(frameIdx / totalFrames * 100)}%`);
+
+    // Yield every 10 frames so UI stays responsive
+    if (frameIdx % 10 === 0) await new Promise(r => setTimeout(r, 0));
+  }
+
+  await encoder.flush();
+  muxer.finalize();
+
+  const { buffer } = target;
+  return new Blob([buffer], { type: 'video/mp4' });
+}
+
+// ── METHOD 2: MediaRecorder canvas → WebM ─────────────────────
+// Works on Firefox, older Chrome. Output is WebM (good quality, widely supported)
+async function exportWithMediaRecorder(OUT_W, OUT_H, fps) {
+  return new Promise((resolve, reject) => {
+    const r = getVideoRect();
+    const previewVidW = r.w > 0 ? r.w : OUT_W;
+    const scaleFactor = OUT_W / previewVidW;
+    const finalFS     = Math.round(S.fontSize * scaleFactor);
+    const textY       = getExportTextY(OUT_W, OUT_H, finalFS);
+
+    const canvas = getExportCanvas(OUT_W, OUT_H);
+    const ctx    = canvas.getContext('2d', { alpha: false });
+
+    // Grab audio from video
+    const canvasStream = canvas.captureStream(fps);
+    let hasAudio = false;
+    try {
+      const vs = vid.captureStream ? vid.captureStream() : vid.mozCaptureStream();
+      vs.getAudioTracks().forEach(t => { canvasStream.addTrack(t); hasAudio = true; });
+    } catch(e) {}
+
+    const mimeType =
+      MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' :
+      MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus') ? 'video/webm;codecs=vp8,opus' :
+      'video/webm';
+
+    const recorder = new MediaRecorder(canvasStream, { mimeType, videoBitsPerSecond: 6_000_000 });
+    const chunks   = [];
+    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = () => {
       canvasStream.getTracks().forEach(t => t.stop());
-    }, 250);
-  };
+      resolve(new Blob(chunks, { type: 'video/webm' }));
+    };
+    recorder.onerror = reject;
+
+    let rafId = null;
+    function loop() {
+      if (vid.ended || vid.paused) return;
+      ctx.drawImage(vid, 0, 0, OUT_W, OUT_H);
+      drawCaptionOnCtx(ctx, vid.currentTime, OUT_W, OUT_H, textY, finalFS);
+      const pct = Math.round(10 + (vid.currentTime / vid.duration) * 82);
+      expSetProgress(pct, `Recording… ${Math.round(vid.currentTime / vid.duration * 100)}%`);
+      rafId = requestAnimationFrame(loop);
+    }
+
+    vid.muted   = true;
+    vid.currentTime = 0;
+    setTimeout(() => {
+      recorder.start(100);
+      vid.play();
+      rafId = requestAnimationFrame(loop);
+      vid.onended = () => {
+        cancelAnimationFrame(rafId);
+        ctx.drawImage(vid, 0, 0, OUT_W, OUT_H);
+        drawCaptionOnCtx(ctx, vid.duration, OUT_W, OUT_H, textY, finalFS);
+        setTimeout(() => recorder.stop(), 300);
+        vid.muted = false;
+      };
+    }, 400);
+  });
+}
+
+// ── MAIN EXPORT ENTRY POINT ────────────────────────────────────
+async function downloadVideo() {
+  if (!vidReady || !subs.length) { toast('⚠ Load a video and generate subtitles first!'); return; }
+
+  _expBlob = null;
+  _expExt  = 'mp4';
+  const btn = document.getElementById('dlVidBtn');
+  btn.disabled = true;
+
+  // Show modal
+  document.getElementById('expTitle').textContent  = '⬇ Exporting Video';
+  document.getElementById('expSub').textContent    = 'Burning your customized captions onto the video…';
+  document.getElementById('expDlBtn').disabled     = true;
+  document.getElementById('expDlBtn').textContent  = '⏳ Processing…';
+  document.getElementById('expDlBtn').onclick      = expDownload;
+  expSetProgress(0, 'Starting…');
+  document.getElementById('exportModal').classList.add('show');
+
+  const OUT_W = vid.videoWidth  || 1280;
+  const OUT_H = vid.videoHeight || 720;
+  const fps   = 30;
+
+  try {
+    // ── Try WebCodecs first (best quality, real MP4, works on Android Chrome) ──
+    const hasWebCodecs = typeof VideoEncoder !== 'undefined' && typeof VideoFrame !== 'undefined';
+    if (hasWebCodecs) {
+      expSetProgress(5, 'Using WebCodecs (fast MP4)…');
+      _expBlob = await exportWithWebCodecs(_currentVideoFile, OUT_W, OUT_H, fps);
+      _expExt  = 'mp4';
+    } else {
+      // ── Try MediaRecorder (Firefox, older Chrome) ──
+      const hasMR = typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported('video/webm');
+      if (hasMR) {
+        expSetProgress(5, 'Recording canvas…');
+        _expBlob = await exportWithMediaRecorder(OUT_W, OUT_H, fps);
+        _expExt  = 'webm';
+      } else {
+        throw new Error('NO_ENCODER');
+      }
+    }
+
+    expSetProgress(100, 'Done! ✅');
+    const sizeMB = (_expBlob.size / 1024 / 1024).toFixed(1);
+    document.getElementById('expSub').textContent =
+      `Ready! ${sizeMB}MB · ${_expExt.toUpperCase()} · Captions burned in ✅`;
+    document.getElementById('expDlBtn').disabled = false;
+    document.getElementById('expDlBtn').textContent = '⬇ Download Video';
+
+  } catch(err) {
+    console.warn('Export failed:', err.message);
+
+    // ── Final fallback: original video + SRT ──
+    // Reliable on ALL devices including iOS Safari
+    expSetProgress(100, '');
+    document.getElementById('expTitle').textContent = '📱 Mobile Export';
+    document.getElementById('expSub').innerHTML =
+      'Your browser does not support in-browser video encoding (common on iPhone).<br><br>' +
+      '<strong style="color:var(--txt)">Downloading original video + SRT file.</strong><br>' +
+      'Open in <strong style="color:var(--p-lt)">CapCut</strong> or <strong style="color:var(--p-lt)">VN</strong> → ' +
+      'Import video → Add Text/Subtitle → Import SRT → your styled captions appear!';
+
+    document.getElementById('expDlBtn').disabled = false;
+    document.getElementById('expDlBtn').textContent = '⬇ Download Video + SRT';
+    document.getElementById('expDlBtn').onclick = async () => {
+      expClose();
+      // Download original video (original format, original quality)
+      if (_currentVideoFile) {
+        const vUrl = URL.createObjectURL(_currentVideoFile);
+        const va   = document.createElement('a');
+        va.href = vUrl;
+        va.download = _currentVideoFile.name;
+        document.body.appendChild(va); va.click(); va.remove();
+        setTimeout(() => URL.revokeObjectURL(vUrl), 8000);
+      }
+      // Download SRT after short delay (so browser doesn't block both)
+      await new Promise(r => setTimeout(r, 800));
+      exportSRT();
+      toast('✅ Downloaded! Import both files in CapCut or VN app.');
+      btn.disabled = false;
+    };
+  }
+
+  btn.disabled = false;
 }
 
 // ── APPLY TO ALL ────────────────────────────────
@@ -1993,3 +2274,4 @@ window.addEventListener('resize', () => {
 </script>
 </body>
 </html>
+
